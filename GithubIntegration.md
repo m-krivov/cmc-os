@@ -40,7 +40,7 @@ ssh-keygen -t ed25519 -f ejudge-deploy
 
 Затем на странице настроек слева выберите "Deploy keys".
 
-![menu_deploy_keys](images/menu_deploy_keys.png)
+![menu_deploy_keys](images/menu_deploy_keys.png){:width="100%"}
 
 На странице "Deploy keys" нажмите на "Add deploy key".
 
