@@ -16,4 +16,106 @@
 
 Если вам всё или многое понятно, то вы можете сразу приступить к настройке интеграции.
 
-Иначе, продолжение следует...
+## Создание deploy key
+
+Для того чтобы ejudge мог клонировать репозиторий из github необходим ssh-ключ, причем
+у ejudge должна быть его приватная часть, а в github нужно поместить публичную часть.
+Не нужно отдавать в ejudge приватную часть какого-либо существующего ключа, а лучше всего сгенерировать новый ключ специально для ejudge.
+
+Если у вас уже есть сгенерированный ранее deploy key для ejudge, нет необходимости 
+генерировать новый ключ для каждой задачи, можно использовать уже существующий. 
+
+```
+ssh-keygen -t ed25519 -f ejudge-deploy
+```
+
+Поле "passphrase" оставьте пустым (два раза нажмите "Enter"). В результате должны
+быть созданы два файла: `ejudge-deploy` - это приватная часть ключа, и `ejudge-deploy.pub` - это публичная часть ключа.
+
+## Добавление deploy key в проекте github
+
+На странице проекта выберите вкладку "Settings".
+
+![settings](images/settings.png)
+
+Затем на странице настроек слева выберите "Deploy keys".
+
+![menu_deploy_keys](images/menu_deploy_keys.png)
+
+На странице "Deploy keys" нажмите на "Add deploy key".
+
+![add_deploy_key_btn](images/add_deploy_key_btn.png)
+
+Далее в поле ввода "Key" скопируйте содержимое файла `ejudge-deploy.pub` и нажмите "Add key".
+
+![deploy_keys_form](images/deploy_keys_form.png)
+
+Возможно, после нажатия кнопки, github запросит подтверждение операции с помощью ввода OTP-фактора.
+
+Один и тот же deploy key можно использовать для разных интеграций, например, для сдачи разных задач.
+
+## Добавление webhook в проект в github
+
+Теперь в ejudge перейдите на страницу с условием задачи и нажмите кнопку "Setup Version Control System Integration" под условием задачи.
+
+На вопрос о создании новой интеграции отвечайте "Ok".
+
+![ejudge_new_integration](images/ejudge_new_integration.png)
+
+Сейчас нас интересуют поля "Git webhook" и "Git webhook token".
+
+![ejudge_properties_1](images/ejudge_properties_1.png)
+
+Далее вернитесь на страницу github на страницу "Settings", и в меню слева выберите "Webhooks".
+
+![github_webhooks_menu](images/github_webhooks_menu.png)
+
+Нажмите "Add webhook"
+
+![github_add_webhook](images/github_add_webhook.png)
+
+В поле "Payload URL" скопируйте текст из поля "Git webhook" формы в ejudge.
+
+В поле "Content type" выберите "application/json".
+
+В поле "Secret" скопируйте текст из поля "Git webhook token".
+
+Остальное оставьте без изменений и нажмите кнопку "Add webhook".
+
+![github_add_webhook_form](images/github_add_webhook_form.png)
+
+Чтобы убедиться, что webhook успешно добавился, из списка webhook
+откройте его по ссылке, затем откройте вкладку "Recent deliveries"
+и на ней перейдите по ссылке на "ping"-запросе. На вкладке "Response"
+вы должны увидеть в Body `{"ok":true}`.
+
+![github_ping_ok](images/webhook_ping_ok.png)
+
+## Настройка интеграции в ejudge
+
+Теперь вернитесь на страницу с условием задачи в ejudge, на которой должна
+быть открыта форма "Integration properties".
+
+В поле "Git type" выберите "github".
+
+В поле "Git SSH URL" скопируйте URL, по которому репозиторий клонируется из github.
+
+В поле "Language выберите нужный язык программирования".
+
+Поля "Repo subdirectory" и "Branch specification" оставьте пустыми.
+
+В поле "SSH private key (deploy key)" скопируйте содержимое файла `ejudge-deploy`.
+
+Нажмите "Ok".
+
+![ejudge_integration_2](images/ejudge_integration_2.png)
+
+## Успех!
+
+Если вы все сделали правильно, операция push в репозиторий git
+приведет к тому, что последняя версия кода будет скачана, скомпилирована
+и протестирована.
+
+При просмотре исходного кода в ejudge вы не увидите непосредственно код,
+но специальным образом подготовленный текстовый файл, который содержит
+заархивированный каталог с кодом.
