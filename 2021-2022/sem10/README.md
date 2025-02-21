@@ -83,7 +83,7 @@ int pipe(int filedes[2]);
 
 Например,
 ```c
-    char fds[2];
+    int fds[2];
     pipe(fds);
     char wbuf[2] = { 1, 2 };
     write(fds[1], wbuf, sizeof(wbuf)); // записываем в буфер канала в ядре ОС 2 байта
@@ -93,7 +93,7 @@ int pipe(int filedes[2]);
 
 но
 ```c
-    char fds[2];
+    int fds[2];
     pipe(fds);
     char wbuf[2] = { 1, 2 };
     write(fds[1], wbuf, sizeof(wbuf)); // записываем в буфер канала в ядре ОС 2 байта
